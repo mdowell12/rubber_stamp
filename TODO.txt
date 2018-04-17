@@ -1,4 +1,5 @@
-- approve PR
 - unsubscribe from PR
 - open a PR
-- merge PR "number" option not passed as flag but as required arg (maybe use subparser?)
+- merge PR "number" option not passed as flag but as required arg (maybe use child arg parser?)
+
+- approve PR <<< finished but not tested b/c cannot approve own PR

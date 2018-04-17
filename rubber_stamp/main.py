@@ -1,11 +1,15 @@
 import sys
 
+from github_api import approve_pull
 from github_api import get_pulls
 from github_api import merge_pull
 from os_git import get_current_repo_or_fail
 from os_git import get_message_from_editor
 from rubber_stamp_exceptions import RepoNotFoundException
 from rubber_stamp_exceptions import PullNotMergeableException
+
+
+DEFAULT_APPROVE_MESSAGE = ":+1:"
 
 
 def show_pulls(repo, owner):
@@ -45,6 +49,14 @@ def merge_a_pull(repo, owner, number, merge_method, message):
     return "Unknown failure merging pull request #%s in repo %s/%s." % (number, owner, repo)
 
 
+def approve_a_pull(repo, owner, number, message=None):
+    if not number:
+        return "Must provide pull request number if approving."
+
+    message = message or DEFAULT_APPROVE_MESSAGE
+    approve_pull(repo, owner, number, message)
+    return "Approved pull request #%s in repo %s/%s." % (number, owner, repo)
+
 
 if __name__ == "__main__":
 
@@ -54,7 +66,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('verb', choices=['ls', 'merge'], nargs=1)
+    parser.add_argument('verb', choices=['ls', 'merge', 'approve'], nargs=1)
 
     try:
         parser.add_argument('-r', '--repo', help='The git repository to be acted upon',
@@ -91,6 +103,8 @@ if __name__ == "__main__":
             res = show_pulls(arguments.repo, arguments.owner)
         elif verb == 'merge':
             res = merge_a_pull(arguments.repo, arguments.owner, arguments.number, arguments.merge_method, arguments.message)
+        elif verb == 'approve':
+            res = approve_a_pull(arguments.repo, arguments.owner, arguments.number, arguments.message)
         else:
             raise Exception("Should never happen.")
     except Exception as e:

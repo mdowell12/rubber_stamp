@@ -38,6 +38,18 @@ def merge_pull(repo, owner, number, method, message=None):
     return True
 
 
+def approve_pull(repo, owner, number, message=None):
+    url = "/repos/%s/%s/pulls/%s/reviews" % (owner, repo, number)
+
+    data = {
+        'event': 'APPROVE',
+        'body': message
+    }
+
+    _make_request(url, method="POST", data=data)
+    return True
+
+
 def _make_request(endpoint, method="GET", data=None):
     headers = {
         "Accept": "application/vnd.github.v3+json",
@@ -46,6 +58,7 @@ def _make_request(endpoint, method="GET", data=None):
     }
     if data:
         data = json.dumps(data)
+    
     response = requests.request(method, BASE_URL + endpoint, headers=headers, data=data)
     response.raise_for_status()
 
