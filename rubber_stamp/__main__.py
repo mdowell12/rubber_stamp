@@ -57,8 +57,9 @@ def approve_a_pull(repo, owner, number, message=None):
     approve_pull(repo, owner, number, message)
     return "Approved pull request #%s in repo %s/%s." % (number, owner, repo)
 
-
-if __name__ == "__main__":
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
 
     DEFAULT_OWNER = "sproutsocial"
 
@@ -111,3 +112,6 @@ if __name__ == "__main__":
         res = e.message
 
     print res
+
+if __name__ == "__main__":
+    main()
