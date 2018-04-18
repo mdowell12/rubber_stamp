@@ -1,11 +1,18 @@
 import json
+import os
 import requests
 
 from rubber_stamp_exceptions import PullNotMergeableException
 
 
+def _read_token(token_file):
+    with open(token_file, 'r') as f:
+        return f.read().strip()
+
+
 BASE_URL = "https://api.github.com"
-AUTH_TOKEN = "074faad559090f4adc3928e723db1ee6e3133e68"
+DEFAULT_TOKEN_PATH = os.path.join(os.path.expanduser("~"), ".gh/token")
+AUTH_TOKEN = _read_token(DEFAULT_TOKEN_PATH)
 
 NOT_MERGEABLE_EXCEPTION_MESSAGE = '405 Client Error: Method Not Allowed'
 
@@ -58,7 +65,7 @@ def _make_request(endpoint, method="GET", data=None):
     }
     if data:
         data = json.dumps(data)
-    
+
     response = requests.request(method, BASE_URL + endpoint, headers=headers, data=data)
     response.raise_for_status()
 
