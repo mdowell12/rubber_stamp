@@ -23,13 +23,17 @@ def get_current_repo_or_fail():
     return os.path.basename(full_path).strip()
 
 
-def get_message_from_editor():
+def get_message_from_editor(pretext=None):
     """
     Opens a user's editor and returns the contents of the file that they create.
     """
-    editor = os.environ.get('EDITOR','vim')
+    editor = os.environ.get('EDITOR', 'vim')
 
-    initial_message = "# Enter your message here.  Any line beginning with '#' will be ignored.\n\n"
+    initial_message = "# Enter your message here.  Any line beginning with '#' will be ignored.\n"
+
+    if pretext is not None:
+        for line in pretext.split('\n'):
+            initial_message += "# %s\n" % line
 
     with NamedTemporaryFile(suffix=".tmp") as tf:
         tf.write(initial_message)

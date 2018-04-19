@@ -25,7 +25,7 @@ def show_pulls(repo, owner):
         number = pull['number']
         title = pull['title']
         author = pull['user']['login']
-        string_builder.append("%s #%s: %s (%s)" % (repo, number, title, author))
+        string_builder.append("#%s (%s): %s" % (number, author, title))
 
     return "\n".join(string_builder)
 
