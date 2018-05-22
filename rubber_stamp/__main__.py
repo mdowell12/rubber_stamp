@@ -1,10 +1,11 @@
 import sys
+import webbrowser
 
 from github_api import approve_pull
 from github_api import get_pulls
 from github_api import merge_pull
+from github_api import url_for_pull_request
 from os_git import get_current_repo_or_fail
-from os_git import get_message_from_editor
 from rubber_stamp_exceptions import RepoNotFoundException
 from rubber_stamp_exceptions import PullNotMergeableException
 
@@ -35,7 +36,7 @@ def merge_a_pull(repo, owner, number, merge_method, message):
         return "Must provide pull request number if merging."
 
     if not message:
-        message = get_message_from_editor()
+        message = ""
 
     success = False
     try:
@@ -57,6 +58,15 @@ def approve_a_pull(repo, owner, number, message=None):
     approve_pull(repo, owner, number, message)
     return "Approved pull request #%s in repo %s/%s." % (number, owner, repo)
 
+
+def open_pr_in_browser(repo, owner, number):
+    if not number:
+        return "Must provide a pull request number to open"
+
+    url = url_for_pull_request(repo, owner, number)
+    webbrowser.open(url, new=2, autoraise=True)
+
+
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
@@ -67,10 +77,11 @@ def main(args=None):
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('verb', choices=['ls', 'merge', 'approve'], nargs=1)
+    parser.add_argument('verb',
+                        choices=['ls', 'merge', 'approve', 'open'], nargs=1)
 
     try:
-        parser.add_argument('-r', '--repo', help='The git repository to be acted upon',
+        parser.add_argument('-r', '--repo', help='The git repository',
                             default=get_current_repo_or_fail())
     except RepoNotFoundException:
         print "No git repo found. If you aren't in a git repo, specify one."
@@ -106,6 +117,8 @@ def main(args=None):
             res = merge_a_pull(arguments.repo, arguments.owner, arguments.number, arguments.merge_method, arguments.message)
         elif verb == 'approve':
             res = approve_a_pull(arguments.repo, arguments.owner, arguments.number, arguments.message)
+        elif verb == 'open':
+            res = open_pr_in_browser(arguments.repo, arguments.owner, arguments.number)
         else:
             raise Exception("Should never happen.")
     except Exception as e:
