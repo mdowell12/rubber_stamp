@@ -61,6 +61,10 @@ def url_for_pull_request(repo, owner, number):
     return "https://www.github.com/%s/%s/pull/%s" % (owner, repo, number)
 
 
+def url_for_repo(repo, owner):
+    return "https://www.github.com/%s/%s" % (owner, repo)
+
+
 def _make_request(endpoint, method="GET", data=None):
     headers = {
         "Accept": "application/vnd.github.v3+json",

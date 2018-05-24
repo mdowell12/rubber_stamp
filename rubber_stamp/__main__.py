@@ -5,6 +5,7 @@ from github_api import approve_pull
 from github_api import get_pulls
 from github_api import merge_pull
 from github_api import url_for_pull_request
+from github_api import url_for_repo
 from os_git import get_current_repo_or_fail
 from rubber_stamp_exceptions import RepoNotFoundException
 from rubber_stamp_exceptions import PullNotMergeableException
@@ -59,11 +60,12 @@ def approve_a_pull(repo, owner, number, message=None):
     return "Approved pull request #%s in repo %s/%s." % (number, owner, repo)
 
 
-def open_pr_in_browser(repo, owner, number):
-    if not number:
-        return "Must provide a pull request number to open"
+def open_in_browser(repo, owner, number):
+    if number:
+        url = url_for_pull_request(repo, owner, number)
+    else:
+        url = url_for_repo(repo, owner)
 
-    url = url_for_pull_request(repo, owner, number)
     webbrowser.open(url, new=2, autoraise=True)
 
 
@@ -118,7 +120,8 @@ def main(args=None):
         elif verb == 'approve':
             res = approve_a_pull(arguments.repo, arguments.owner, arguments.number, arguments.message)
         elif verb == 'open':
-            res = open_pr_in_browser(arguments.repo, arguments.owner, arguments.number)
+            open_in_browser(arguments.repo, arguments.owner, arguments.number)
+            res = ""
         else:
             raise Exception("Should never happen.")
     except Exception as e:
